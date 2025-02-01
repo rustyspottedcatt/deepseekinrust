@@ -1,0 +1,14 @@
+extern "C" __global__ void weight_dequant_kernel(
+    const float* x, const float* s, float* y, int M, int N, int BLOCK_SIZE
+) {
+    int pid_m = blockIdx.x;
+    int pid_n = blockIdx.y;
+
+    int offs_m = pid_m * BLOCK_SIZE + threadIdx.x;
+    int offs_n = pid_n * BLOCK_SIZE + threadIdx.y;
+
+    if (offs_m < M && offs_n < N) {
+        int idx = offs_m * N + offs_n;
+        y[idx] = x[idx] * s[pid_m * (N / BLOCK_SIZE) + pid_n];
+    }
+}

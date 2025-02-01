@@ -1,0 +1,11 @@
+extern "C" __global__ void act_quant_kernel(
+    const float* x, float* y, float* s, int BLOCK_SIZE
+) {
+    int pid = blockIdx.x;
+    int offs = pid * BLOCK_SIZE + threadIdx.x;
+
+    float val = x[offs];
+    float scale = fmaxf(fabsf(val), 1e-6) / 448.0f;
+    y[offs] = val / scale;
+    s[pid] = scale;
+}
